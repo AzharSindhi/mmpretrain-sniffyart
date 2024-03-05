@@ -15,21 +15,29 @@ data_preprocessor = dict(
     num_classes = num_classes
 )
 
+data_root = 'data/sniffyart/cls'
+
 train_dataloader = dict(
     dataset = dict(
-        data_root='/hdd/datasets/sniffyart-extension/cls/VOC2012',
+        data_root=data_root,
         split='train',
         classes=SNIFFYART_CLASSES
     )
 )
 val_dataloader = dict(
     dataset = dict(
-        data_root='/hdd/datasets/sniffyart-extension/cls/VOC2012',
+        data_root=data_root,
         split='val',
         classes=SNIFFYART_CLASSES
     )
 )
-test_dataloader = val_dataloader
+test_dataloader = dict(
+    dataset = dict(
+        data_root=data_root,
+        split='test',
+        classes=SNIFFYART_CLASSES
+    )
+)
 
 
 

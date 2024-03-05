@@ -1,4 +1,4 @@
-_base_ = './csra_1xb16_sniffyart-448px_r101.py'
+_base_ = './csra_r101.py'
 
 checkpoint = 'https://download.openmmlab.com/mmclassification/v0/resnet/resnet50_8xb32_in1k_20210831-ea4938fc.pth'
 
