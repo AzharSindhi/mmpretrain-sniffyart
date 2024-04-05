@@ -181,8 +181,7 @@ def main():
     if args.out and args.out_item in ['pred', None]:
         runner.test_evaluator.metrics.append(
             DumpResults(out_file_path=args.out))
-None
-    # start testing
+
     metrics = runner.test()
 
     if args.out and args.out_item == 'metrics':

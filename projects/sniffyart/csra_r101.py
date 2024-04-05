@@ -1,5 +1,6 @@
 _base_ = ['mmpretrain::csra/resnet101-csra_1xb16_voc07-448px.py']
 
+checkpoint = '/home/woody/iwi5/iwi5093h/models/resnet101_8xb32_in1k_20210831-539c63f8.pth'
 
 SNIFFYART_CLASSES = [
     'cooking', 'dancing', 'drinking', 'eating', 'holding the nose', 'painting', 'peeing',
@@ -39,27 +40,33 @@ test_dataloader = dict(
     )
 )
 
+test_evaluator = [
+    dict(_scope_='mmpretrain', type='VOCMultiLabelMetric'),
+    dict(_scope_='mmpretrain', average='micro', type='VOCMultiLabelMetric'),
+    dict(_scope_='mmpretrain', average=None, type='VOCMultiLabelMetric'),
+    dict(_scope_='mmpretrain', type='VOCAveragePrecision'),
+]
 
 
 model = dict(
+    backbone = dict(
+        init_cfg = dict(
+            checkpoint = checkpoint
+        )
+    ),
     head = dict(
         num_classes=num_classes,
         loss=dict(pos_weight=FRQS, loss_weight=0.1)
     )
 )
 
-# train_dataloader = dict(
-#     dataset = dict(
-#         data_root='/hdd/datasets/sniffyart-extension/cls/VOC2012',
-#         split='train',
-#     )
-# )
-# val_dataloader = dict(
-#     dataset = dict(
-#         data_root='/hdd/datasets/sniffyart-extension/cls/VOC2012',
-#         split='val',
-#     )
-# )
-# test_dataloader = val_dataloader
+train_cfg = dict(
+    max_epochs = 50, val_interval=1
+)
 
-#val_evaluator = [dict(type='ConfusionMatrix')]
+
+default_hooks = dict(checkpoint=dict(
+    interval=50,
+    save_best='multi-label/f1-score',
+    rule='greater'
+))
