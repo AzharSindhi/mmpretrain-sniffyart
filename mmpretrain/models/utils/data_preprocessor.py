@@ -117,8 +117,14 @@ class ClsDataPreprocessor(BaseDataPreprocessor):
 
             # -- Normalization ---
             inputs = inputs.float()
+            channels = inputs.size(1)
             if self._enable_normalize:
-                inputs = (inputs - self.mean) / self.std
+                if channels == 6:
+                    inputs[:, :3] = (inputs[:, :3] - self.mean) / self.std
+                    inputs[:, 3:] = (inputs[:, 3:] - self.mean) / self.std
+                else:
+                    inputs = (inputs - self.mean) / self.std
+                
 
             # ------ Padding -----
             if self.pad_size_divisor > 1:

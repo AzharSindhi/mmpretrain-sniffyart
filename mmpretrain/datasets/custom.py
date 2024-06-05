@@ -194,6 +194,7 @@ class CustomDataset(BaseDataset):
                  with_label=True,
                  extensions: Sequence[str] = ('.jpg', '.jpeg', '.png', '.ppm',
                                               '.bmp', '.pgm', '.tif'),
+                 use_context = False,
                  metainfo: Optional[dict] = None,
                  lazy_init: bool = False,
                  **kwargs):
@@ -217,6 +218,7 @@ class CustomDataset(BaseDataset):
         # Full initialize the dataset.
         if not lazy_init:
             self.full_init()
+        self.use_context = use_context
 
     def _find_samples(self):
         """find samples from ``data_prefix``."""
