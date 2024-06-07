@@ -79,10 +79,10 @@ class TwoBranchModel(BaseClassifier):
             self.backbone_context = None
         
         self.use_context = use_context
-        self.transform = None
+        self.linear_transform = None
         if use_context:
-            # size doubled due to context concatenation, have to transform bakc
-            self.transform = nn.Linear(head.in_channels *2, head.in_channels) 
+            # size doubled due to context concatenation, have to transform back
+            self.linear_transform = nn.Linear(head.in_channels *2, head.in_channels) 
     
 
     def forward(self,
@@ -155,9 +155,9 @@ class TwoBranchModel(BaseClassifier):
     def append_context_out(self, xcontext:torch.Tensor, x: tuple):
         if xcontext is None:
             return x
-        out_context = self.backbone_context(xcontext)
-        # out = tuple([torch.cat((x1, x2), dim=1) for x1, x2 in zip(x, out_context)])
-        return x + out_context
+        assert not self.linear_transform is None, "Transformation must be applied here"
+        out = tuple([self.linear_transform(torch.cat((x1, x2), dim=1)) for x1, x2 in zip(x, xcontext)])
+        return out
 
         
     def extract_feat(self, inputs, stage='neck'):
@@ -236,18 +236,20 @@ class TwoBranchModel(BaseClassifier):
             (f'Invalid output stage "{stage}", please choose from "backbone", '
              '"neck" and "pre_logits"')
         
-        xcrop, xcontext = self.unpack_inputs(inputs)
-        x = self.backbone_crop(xcrop)
-        x = self.append_context_out(xcontext, x)
+        x, xcontext = self.unpack_inputs(inputs)
+        x = self.backbone_crop(x)
+        if xcontext is not None:
+            xcontext = self.backbone_context(xcontext)#self.append_context_out(xcontext, x)
 
         if stage == 'backbone':
+            raise("Why is this used")
             return x
 
         if self.with_neck:
             x = self.neck(x)
-            x = torch.cat(x, dim=1)
-            if self.transform:
-                x = (self.transform(x),)
+            if xcontext is not None:
+                xcontext = self.neck(xcontext)
+                x = self.append_context_out(xcontext, x)
         if stage == 'neck':
             return x
 
