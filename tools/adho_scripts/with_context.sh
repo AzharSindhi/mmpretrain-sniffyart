@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #!/bin/bash
-#SBATCH --time=00:10:00
+#SBATCH --time=07:00:00
 #SBATCH --job-name=adho2024_sniffy_with
 #SBATCH --gres=gpu:2
 #SBATCH --partition=a100,v100

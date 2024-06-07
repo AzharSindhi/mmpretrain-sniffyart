@@ -23,13 +23,13 @@ default_hooks = dict(
     checkpoint=dict(
         type='CheckpointHook',
         save_best='auto',    # svae the best, auto select the `Accuracy` to the first  metric in val_evalutor
-        interval=1,
-        max_keep_ckpts=3,  # only save the  latest 3 ckpts
+        interval=10,
+        max_keep_ckpts=1,  # only save the  latest 3 ckpts
         rule='greater'            # the greater the metric, the better the ckpt will be    
 )
 )
 
 # Training settings
-train_cfg = dict(
-    max_epochs=3,
-)
+# train_cfg = dict(
+#     max_epochs=3,
+# )
