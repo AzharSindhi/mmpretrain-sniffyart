@@ -79,6 +79,10 @@ class TwoBranchModel(BaseClassifier):
             self.backbone_context = None
         
         self.use_context = use_context
+        self.transform = None
+        if use_context:
+            # size doubled due to context concatenation, have to transform bakc
+            self.transform = nn.Linear(head.in_channels *2, head.in_channels) 
     
 
     def forward(self,
@@ -152,8 +156,8 @@ class TwoBranchModel(BaseClassifier):
         if xcontext is None:
             return x
         out_context = self.backbone_context(xcontext)
-        out = tuple([torch.cat((x1, x2), dim=1) for x1, x2 in zip(x, out_context)])
-        return out
+        # out = tuple([torch.cat((x1, x2), dim=1) for x1, x2 in zip(x, out_context)])
+        return x + out_context
 
         
     def extract_feat(self, inputs, stage='neck'):
@@ -241,6 +245,9 @@ class TwoBranchModel(BaseClassifier):
 
         if self.with_neck:
             x = self.neck(x)
+            x = torch.cat(x, dim=1)
+            if self.transform:
+                x = (self.transform(x),)
         if stage == 'neck':
             return x
 
