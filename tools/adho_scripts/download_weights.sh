@@ -1,0 +1,2 @@
+wget https://download.openmmlab.com/mmpose/pretrain_models/hrnet_w32-36af842e.pth -O /home/hpc/iwi5/iwi5197h/.cache/torch/hub/checkpoints/hrnet_w32-36af842e.pth
+wget "https://download.pytorch.org/models/resnet101-63fe2227.pth" -O /home/hpc/iwi5/iwi5197h/.cache/torch/hub/checkpoints/resnet101-63fe2227.pth

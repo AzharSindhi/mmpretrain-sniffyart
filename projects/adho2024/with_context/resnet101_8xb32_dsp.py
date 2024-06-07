@@ -29,3 +29,7 @@ default_hooks = dict(
         rule='greater'            # the greater the metric, the better the ckpt will be    
 )
 )
+# Training settings
+train_cfg = dict(
+    max_epochs=5,
+)

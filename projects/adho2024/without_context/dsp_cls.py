@@ -1,13 +1,13 @@
 # dataset settings
 dataset_type = 'ImagePairDataset'
 # images directory
-images_dir = "/net/cluster/azhar/datasets/gestuers_keypoints_cmac/smell-gesture-recognition/images"
+images_dir = "/home/woody/iwi5/iwi5197h/smell-gesture-recognition/images"
 # train json path
-train_anns_path = "/net/cluster/azhar/mywork/thesis-gestures-recognition/data/gestures/annotations_train.json"
+train_anns_path = "/home/woody/iwi5/iwi5197h/smell-gesture-recognition/annotations_train.json"
 # validation json path
-val_anns_path = "/net/cluster/azhar/mywork/thesis-gestures-recognition/data/gestures/annotations_valid.json"
+val_anns_path = "/home/woody/iwi5/iwi5197h/smell-gesture-recognition/annotations_valid.json"
 # test json path
-test_anns_path = "/net/cluster/azhar/mywork/thesis-gestures-recognition/data/gestures/annotations_test.json"
+test_anns_path = "/home/woody/iwi5/iwi5197h/smell-gesture-recognition/annotations_test.json"
 
 data_preprocessor = dict(
     num_classes=7,
@@ -19,7 +19,7 @@ data_preprocessor = dict(
 )
 
 use_context = False
-
+batch_size = 32
 train_pipeline = [
     # dict(type='LoadImageFromFile'),
     dict(type='RandomResizedCrop', scale=224),
@@ -35,7 +35,7 @@ test_pipeline = [
 ]
 
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=batch_size,
     num_workers=5,
     dataset=dict(
         type=dataset_type,
@@ -47,7 +47,7 @@ train_dataloader = dict(
 )
 
 val_dataloader = dict(
-    batch_size=32,
+    batch_size=batch_size,
     num_workers=5,
     dataset=dict(
         type=dataset_type,
@@ -59,7 +59,7 @@ val_dataloader = dict(
 )
 
 test_dataloader = dict(
-    batch_size=32,
+    batch_size=batch_size,
     num_workers=5,
     dataset=dict(
         type=dataset_type,
