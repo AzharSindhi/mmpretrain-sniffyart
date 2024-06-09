@@ -13,7 +13,7 @@ cd $DIR
 
 source venv/bin/activate
 
-BASE_WORK_DIR=work_dirs/adho_corrected
+BASE_WORK_DIR=work_dirs/adho_corrected_deart_pretrained
 
 # Test commands with deArt pretrained weights
 commands=(
