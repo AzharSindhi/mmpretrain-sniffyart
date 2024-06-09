@@ -8,7 +8,7 @@ import os
 import torch
 
 @DATASETS.register_module()
-class ImagePairDataset(BaseDataset):
+class DeArt(BaseDataset):
     def __init__(self,
                  data_root: str = '',
                  data_prefix: Union[str, dict] = '',
@@ -29,7 +29,7 @@ class ImagePairDataset(BaseDataset):
 
         self.extensions = tuple(set([i.lower() for i in extensions]))
         self.with_label = with_label
-        classes = ['None', 'cooking', 'drinking', 'drinking,smoking', 'holding the nose', 'smoking', 'sniffing']
+        classes = ["partial", "ride", "bend", "sit", "fall", "stand", "other", "walk", "pray", "kneel", "lie", "squats", "push"]
         self.class_mapping = self.get_class_mapping(classes)
         self.use_context = use_context
         self.random_context = random_context
@@ -78,7 +78,7 @@ class ImagePairDataset(BaseDataset):
         return np.array(Image.open(path).convert("RGB"))
 
     def crop_image(self, img, box):
-        x, y, w, h = box
+        x, y, w, h = np.asarray(box, dtype=int)
         return np.copy(img[y: y + h, x: x + w])
 
     def mask_context_image(self, image, bbox):
@@ -99,8 +99,7 @@ class ImagePairDataset(BaseDataset):
         data_list = []
         for annotation in annotations:
             img_id = annotation["image_id"]
-            gesture = annotation["gesture"]
-            gt_label = self.class_mapping[gesture]
+            gt_label = int(annotation["category_id"])
             x, y, w, h = annotation["bbox"]
             
             img_id_random = np.random.choice(img_ids)

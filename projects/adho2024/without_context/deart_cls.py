@@ -1,16 +1,16 @@
 # dataset settings
-dataset_type = 'ImagePairDataset'
+dataset_type = 'DeArt'
 # images directory
-images_dir = "/home/woody/iwi5/iwi5197h/smell-gesture-recognition/images"
+images_dir = "/home/woody/iwi5/iwi5197h/DeArt/images"
 # train json path
-train_anns_path = "/home/woody/iwi5/iwi5197h/smell-gesture-recognition/annotations_train.json"
+train_anns_path = "/home/woody/iwi5/iwi5197h/DeArt/deArt_pose_train.json"
 # validation json path
-val_anns_path = "/home/woody/iwi5/iwi5197h/smell-gesture-recognition/annotations_valid.json"
+val_anns_path = "/home/woody/iwi5/iwi5197h/DeArt/deArt_pose_val.json"
 # test json path
-test_anns_path = "/home/woody/iwi5/iwi5197h/smell-gesture-recognition/annotations_test.json"
+test_anns_path = "/home/woody/iwi5/iwi5197h/DeArt/deArt_pose_test.json"
 
 data_preprocessor = dict(
-    num_classes=7,
+    num_classes=13,
     # RGB format normalization parameters
     mean=[123.675, 116.28, 103.53],
     std=[58.395, 57.12, 57.375],
@@ -18,8 +18,12 @@ data_preprocessor = dict(
     to_rgb=False,
 )
 
-use_context = True
-batch_size = 32
+use_context = False
+random_context = False
+mask_context_box = False
+random_context_prob = 0.0 
+batch_size = 64
+num_workers = 8
 train_pipeline = [
     # dict(type='LoadImageFromFile'),
     dict(type='RandomResizedCrop', scale=224),
@@ -36,19 +40,22 @@ test_pipeline = [
 
 train_dataloader = dict(
     batch_size=batch_size,
-    num_workers=5,
+    num_workers=num_workers,
     dataset=dict(
         type=dataset_type,
         ann_file = train_anns_path,
         data_root=images_dir,
         use_context = use_context,
+        random_context = random_context,
+        random_context_prob = random_context_prob,
+        mask_context_box = mask_context_box,
         pipeline=train_pipeline),
     sampler=dict(type='DefaultSampler', shuffle=True),
 )
 
 val_dataloader = dict(
     batch_size=batch_size,
-    num_workers=5,
+    num_workers=num_workers,
     dataset=dict(
         type=dataset_type,
         ann_file=val_anns_path,
@@ -60,7 +67,7 @@ val_dataloader = dict(
 
 test_dataloader = dict(
     batch_size=batch_size,
-    num_workers=5,
+    num_workers=num_workers,
     dataset=dict(
         type=dataset_type,
         ann_file=test_anns_path,

@@ -57,7 +57,7 @@ class LabelSmoothLoss(nn.Module):
     """
 
     def __init__(self,
-                 label_smooth_val,
+                 label_smooth_val=0.1,
                  num_classes=None,
                  use_sigmoid=None,
                  mode='original',

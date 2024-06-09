@@ -1,0 +1,7 @@
+1. train with PoPArt
+2. pretrained PoPArt experiments
+
+
+1. random context
+2. random context with prob 0.2
+3. mask out context
