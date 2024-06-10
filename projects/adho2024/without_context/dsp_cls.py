@@ -19,7 +19,7 @@ data_preprocessor = dict(
 )
 
 use_context = False
-batch_size = 32
+batch_size = 64
 train_pipeline = [
     # dict(type='LoadImageFromFile'),
     dict(type='RandomResizedCrop', scale=224),

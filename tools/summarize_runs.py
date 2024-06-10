@@ -125,6 +125,7 @@ def run_evaluation(model_dir, group, subdir_path, results):
         results['test'][group]['accuracies'].append(test_accuracy)
         results['test'][group]['f1_scores'].append(test_f1)
     else:
+        return results # ignore
         cfg, preprocessor = load_config_and_preprocessor(model_path)
         test_dataloader = build_dataloader(cfg.test_dataloader.dataset)
         model = init_model(cfg, checkpoint_path, device=DEVICE)
@@ -135,7 +136,7 @@ def run_evaluation(model_dir, group, subdir_path, results):
 
     if val_json_path:
         val_result = read_val_results(val_json_path)
-        if val_result["step"] == 100:
+        if val_result["step"] > 20: # lineant
             val_accuracy = val_result['accuracy/top1']
             val_f1 = val_result['single-label/f1-score']
             results['val'][group]['accuracies'].append(val_accuracy)
@@ -162,20 +163,20 @@ def run_evaluation(model_dir, group, subdir_path, results):
     return results
 
 
-def process_setting(base_dir, context_type, subdir, file):
-    subdir_path = os.path.join(base_dir, context_type, subdir) # default or nonlinear
+def process_setting(base_dir, experiment_name, neck, file):
+    subdir_path = os.path.join(base_dir, experiment_name, neck) # default or nonlinear
     results = {
         'test': {group: {'accuracies': [], 'f1_scores': []} for group in model_groups},
         'val': {group: {'accuracies': [], 'f1_scores': []} for group in model_groups}
     }
     modelnames = os.listdir(subdir_path)
     for i, model_dir in tqdm(enumerate(modelnames)): #hrnet, rn101, rn50, swinv2, etc
-        print(f"Processing {model_dir} ({i+1}/{len(modelnames)}):")
+        print(f"Processing {os.path.join(subdir_path, model_dir)} ({i+1}/{len(modelnames)}):")
         group = model_dir.split('_')[0]
         if group in model_groups.keys():
             results = run_evaluation(model_dir, group, subdir_path, results)
     file.write("----------------------------------------------------\n")
-    write_results(base_dir, context_type, subdir, results, file)
+    write_results(base_dir, experiment_name, neck, results, file)
 
 def write_results(base_dir, context_type, subdir, results, file):
     file.write(f"directory: {base_dir}/{context_type}/{subdir}\n")
@@ -212,9 +213,19 @@ def write_results(base_dir, context_type, subdir, results, file):
 def main(base_dir):
     with open(os.path.join(base_dir, 'summary_results.txt'), 'w') as file:
         experiment_types = [d for d in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, d))]
-        for context_type in experiment_types:
-            for subdir in ['default']:
-                process_setting(base_dir, context_type, subdir, file)
+        context_experiments = [d for d in experiment_types if "with_context" in d or "without_context" in d]
+        for experiment_name in context_experiments:
+            for neck in ['default']:
+                process_setting(base_dir, experiment_name, neck, file)
+        if not "with_context_ablations" in experiment_types:
+            return
+        
+        experiment_name = "with_context_ablations"
+        for neck in ['default']:
+            ablations = os.listdir(os.path.join(base_dir, experiment_name, neck))
+            for ablation in ablations:
+                thisneck = os.path.join(neck, ablation)
+                process_setting(base_dir, experiment_name, thisneck, file)
 
 if __name__ == "__main__":
     mp.set_start_method('spawn')
